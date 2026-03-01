@@ -7,6 +7,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a name']
   },
+  telephone: {
+    type: String,
+    required: [true, 'Please add a telephone number']
+  },
   email: {
     type: String,
     required: [true, 'Please add an email'],
@@ -16,16 +20,16 @@ const UserSchema = new mongoose.Schema({
       'Please add a valid email'
     ]
   },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
   password: {
     type: String,
     required: [true, 'Please add a password'],
     minlength: 6,
     select: false
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
@@ -50,7 +54,6 @@ UserSchema.methods.matchPassword=async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword,this.password);
 }
 
-// module.exports = mongoose.model('User', UserSchema);
 module.exports = mongoose.model(
   'User',
   UserSchema
