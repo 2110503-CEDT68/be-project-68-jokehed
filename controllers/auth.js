@@ -5,17 +5,20 @@ const User = require('../models/User');
 //@access Public
 exports.register=async (req,res,next) => {
     try {
-        const {name,email,password,role}=req.body;
-        //Create new User
-        const user=await User.create(
-            {name,email,password,role}
-        );
-        // const token=user.getSignedJwtToken();
-        // res.status(200).json({success:true});
+        const {name,telephone,email,password,role}=req.body;
+
+        const user=await User.create({
+            name,
+            telephone,
+            email,
+            password,
+            role
+        });
+
         sendTokenResponse(user,200,res);
     } catch (err) {
-        res.status(400).json({success:false});
-        console.log(err.stack);
+        console.log(err);
+        res.status(400).json({success:false,error:err.message});
     }
 };
 
@@ -91,4 +94,5 @@ exports.logout = async (req, res, next) => {
         success: true,
         data: {}
     });
+    console.log("yatta!");
 };
