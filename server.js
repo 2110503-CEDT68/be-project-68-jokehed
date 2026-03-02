@@ -3,11 +3,11 @@ setServers(["1.1.1.1", "8.8.8.8"]);
 
 const express=require('express');
 const dotenv=require('dotenv');
-const hospitals=require(`./routes/hospitals`);
+const campgrounds=require(`./routes/campgrounds`);
 const connectDB=require('./config/db');
 const auth=require('./routes/auth');
 const cookieParser=require("cookie-parser");
-const appointments=require('./routes/appointments');
+const bookings=require('./routes/bookings');
 
 dotenv.config({path:'./config/config.env'});
 
@@ -18,10 +18,10 @@ const app=express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(`/api/v1/hospitals`,hospitals);
+app.use(`/api/v1/campgrounds`,campgrounds);
 app.use(`/api/v1/auth`,auth);
 
-app.use('/api/v1/appointments',appointments);
+app.use('/api/v1/bookings',bookings);
 
 app.set('query parser','extended');
 
