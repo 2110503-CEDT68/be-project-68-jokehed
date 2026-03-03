@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Booking  = require('../models/Booking');
 
 //@desc Register user
 //@route POST /api/v1/auth/register
@@ -96,3 +97,52 @@ exports.logout = async (req, res, next) => {
     });
     console.log("yatta!");
 };
+
+//@desc Change password
+//@route PUT /api/v1/auth/updatepassword
+//@access Private
+exports.updatepassword=async (req,res,next)=>{
+
+    const user=await User.findById(req.user.id).select('+password');
+
+    if (!user) {
+        return res.status(401).json({success:false,msg:'User not found'});
+    }
+    const {currentpassword,newpassword} = req.body;
+
+    if (!currentpassword||!newpassword) {
+        return res.status(401).json({success:false,msg:'Please provide an current password or new password'});
+    }
+
+    const isMatch = await user.matchPassword(currentpassword);
+    if (!isMatch) {
+        return res.status(401).json({success:false,msg:'Current password is incorrect'});
+    } else {
+        user.password=newpassword;
+        await user.save();
+
+        sendTokenResponse(user,200,res);
+    }
+}
+
+
+//@desc    Delete user and their bookings
+//@route   DELETE /api/v1/users/:id
+//@access  Private (Admin)
+exports.deleteuser=async (req,res,next)=>{
+    try {
+        const user=await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({success:false,msg:'User not found'});
+        }
+
+        await Booking.deleteMany({user:req.params.id});
+
+        await user.deleteOne();
+
+        return res.status(200).json({success:true,msg:"User deleted",data:user});
+
+    }catch(err){
+        return res.status(500).json({success:false,msg:'Cant delete user'});
+    }
+}
