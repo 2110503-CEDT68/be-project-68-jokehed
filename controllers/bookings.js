@@ -73,10 +73,21 @@ exports.getBooking = async (req, res, next) => {
       });
     }
 
+    if (
+        req.user.role !== 'admin' &&
+        booking.user.toString() !== req.user.id
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to access this booking'
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: booking
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
