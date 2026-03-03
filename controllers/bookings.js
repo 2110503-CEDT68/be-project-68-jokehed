@@ -8,21 +8,28 @@ const Campground = require('../models/Campground');
  */
 exports.getBookings = async (req, res, next) => {
   let query;
-
   if (req.user.role !== 'admin') {
     query = Booking.find({ user: req.user.id }).populate({
       path: 'campground',
       select: 'name address telephone'
     });
-  } else {
-    if (req.params.campgroundId) {
+  }
+  else {
+    if (req.query.user) {
+      query = Booking.find({ user: req.query.user }).populate({
+        path: 'campground',
+        select: 'name address telephone'
+      });
+    }
+    else if (req.params.campgroundId) {
       query = Booking.find({
         campground: req.params.campgroundId
       }).populate({
         path: 'campground',
         select: 'name address telephone'
       });
-    } else {
+    }
+    else {
       query = Booking.find().populate({
         path: 'campground',
         select: 'name address telephone'
@@ -39,13 +46,13 @@ exports.getBookings = async (req, res, next) => {
       data: bookings
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: 'Cannot find Booking'
     });
   }
 };
-
 
 /**
  * @desc    Get single booking
